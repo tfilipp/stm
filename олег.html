@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>ПОМОГИТЕ Я ОЛЕГ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #0f0;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 36px;
+            text-shadow: 0 0 10px #0f0;
+            animation: pulse 2s infinite;
+        }
+        
+        .game-container {
+            background-color: #111;
+            padding: 20px;
+            border: 2px solid #0f0;
+            border-radius: 10px;
+            margin: 20px 0;
+            min-height: 300px;
+            position: relative;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        button {
+            background-color: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        
+        button:hover {
+            background-color: #0a0;
+        }
+        
+        .plant {
+            width: 50px;
+            height: 50px;
+            background-color: green;
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .maze {
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            position: relative;
+            background-color: #222;
+            border: 1px solid #0f0;
+        }
+        
+        #player {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            position: absolute;
+            border-radius: 50%;
+            top: 10px;
+            left: 10px;
+        }
+        
+        .wall {
+            background-color: #0f0;
+            position: absolute;
+        }
+        
+        .finish {
+            width: 30px;
+            height: 30px;
+            background-color: yellow;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            border-radius: 50%;
+        }
+        
+        .memory-card {
+            width: 80px;
+            height: 80px;
+            background-color: #333;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+            line-height: 80px;
+            font-size: 0px;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .memory-card.flipped {
+            font-size: 24px;
+            background-color: #0a0;
+        }
+        
+        .target {
+            width: 60px;
+            height: 60px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+        }
+        
+        .screamer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            color: red;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 100px;
+            z-index: 1000;
+            animation: shake 0.1s linear infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-10px, -10px); }
+            50% { transform: translate(10px, 10px); }
+            75% { transform: translate(-10px, 10px); }
+            100% { transform: translate(10px, -10px); }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #333;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #0f0;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        #typing-challenge {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        #typing-text {
+            font-size: 24px;
+            color: #0f0;
+            margin-bottom: 20px;
+        }
+        
+        #typing-input {
+            width: 300px;
+            padding: 10px;
+            font-size: 18px;
+            background-color: #333;
+            color: #0f0;
+            border: 2px solid #0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ПОМОГИТЕ Я ОЛЕГ</h1>
+        <p>ОЛЕГ застрял в сайте Steam про растения! Вам нужно пройти все мини-игры, чтобы освободить его!</p>
+        
+        <div id="intro" class="game-container">
+            <h2>Начать спасение ОЛЕГА</h2>
+            <p>Подготовьтесь к испытаниям! ОЛЕГ очень рассчитывает на вас!</p>
+            <button onclick="startGame()">НАЧАТЬ</button>
+        </div>
+        
+        <div id="game1" class="game-container hidden">
+            <h2>Мини-игра 1: Найдите ОЛЕГА среди растений</h2>
+            <p>Кликайте по растениям, чтобы найти ОЛЕГА. У вас есть 30 секунд!</p>
+            <div id="plants-container" style="height: 300px; position: relative;"></div>
+            <div class="progress-bar">
+                <div id="timer1" class="progress"></div>
+            </div>
+        </div>
+        
+        <div id="game2" class="game-container hidden">
+            <h2>Мини-игра 2: Пройдите через лабиринт растений</h2>
+            <p>Используйте клавиши WASD или стрелки, чтобы пройти к выходу</p>
+            <div class="maze">
+                <div id="player"></div>
+                <div class="finish"></div>
+                <!-- Стены будут добавлены через JavaScript -->
+            </div>
+        </div>
+        
+        <div id="game3" class="game-container hidden">
+            <h2>Мини-игра 3: Найдите пары букв ОЛЕГ</h2>
+            <p>Откройте карточки и найдите все пары букв</p>
+            <div id="memory-container"></div>
+        </div>
+        
+        <div id="game4" class="game-container hidden">
+            <h2>Мини-игра 4: Поймайте ОЛЕГА</h2>
+            <p>Кликните по ОЛЕГУ 10 раз прежде, чем он исчезнет</p>
+            <div id="target-container" style="height: 300px; position: relative;"></div>
+            <div>Осталось кликов: <span id="clicks-left">10</span></div>
+        </div>
+        
+        <div id="game5" class="game-container hidden">
+            <h2>Мини-игра 5: Правильно напечатайте код освобождения</h2>
+            <div id="typing-challenge">
+                <div id="typing-text">ОЛЕГ ХОЧЕТ ВЫБРАТЬСЯ ПОМОГИТЕ ОЛЕГУ СРОЧНО</div>
+                <input type="text" id="typing-input" placeholder="Введите текст здесь...">
+            </div>
+        </div>
+        
+        <div id="end" class="game-container hidden">
+            <h2>ПОЗДРАВЛЯЕМ!</h2>
+            <p>ОMjAg0LzQsNGA0YLQsCAxMDMwINCz0L7QtNCwINC+0LvQtdCzINC/0YDQvtC40LfQvtGI0LXQuyDQvdCw0LnQtNC40YLQtSDRgSDQutCw0LrQvtC5INGB0LrQvtGA0L7RgdGC0YzRjiDQvtC70LXQsy4=</p>
+            <button onclick="location.reload()">УДАЛЯЙ БРАУЗЕР</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentGame = 0;
+        let games = ["intro", "game1", "game2", "game3", "game4", "game5", "end"];
+        let plantsClicked = 0;
+        let totalPlants = 15;
+        let foundOleg = false;
+        let playerX = 10;
+        let playerY = 10;
+        let playerSpeed = 5;
+        let walls = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let clicksLeft = 10;
+        
+        function startGame() {
+            showNextGame();
+        }
+        
+        function showNextGame() {
+            // Скрыть текущую игру
+            if (currentGame >= 0 && currentGame < games.length) {
+                document.getElementById(games[currentGame]).classList.add("hidden");
+            }
+            
+            // Показать скример между играми (кроме начала и конца)
+            if (currentGame > 0 && currentGame < games.length - 1) {
+                showScreamer();
+                setTimeout(() => {
+                    currentGame++;
+                    showCurrentGame();
+                }, 1000);
+            } else {
+                currentGame++;
+                showCurrentGame();
+            }
+        }
+        
+        function showCurrentGame() {
+            if (currentGame < games.length) {
+                document.getElementById(games[currentGame]).classList.remove("hidden");
+                
+                // Инициализация текущей игры
+                switch (games[currentGame]) {
+                    case "game1":
+                        startPlantGame();
+                        break;
+                    case "game2":
+                        startMazeGame();
+                        break;
+                    case "game3":
+                        startMemoryGame();
+                        break;
+                    case "game4":
+                        startTargetGame();
+                        break;
+                    case "game5":
+                        startTypingGame();
+                        break;
+                }
+            }
+        }
+        
+        function showScreamer() {
+            const screamer = document.createElement("div");
+            screamer.className = "screamer";
+            screamer.innerHTML = "ОЛЕГ";
+            document.body.appendChild(screamer);
+            
+            // Звук для скримера
+            const audio = new Audio("scr.mp3");
+            audio.play();
+            
+            setTimeout(() => {
+                document.body.removeChild(screamer);
+            }, 800);
+        }
+        
+        // Игра 1: Поиск ОЛЕГА среди растений
+        function startPlantGame() {
+            plantsClicked = 0;
+            foundOleg = false;
+            const plantsContainer = document.getElementById("plants-container");
+            plantsContainer.innerHTML = "";
+            
+            // Создать растения
+            const olegIndex = Math.floor(Math.random() * totalPlants);
+            
+            for (let i = 0; i < totalPlants; i++) {
+                const plant = document.createElement("div");
+                plant.className = "plant";
+                plant.style.left = Math.random() * (plantsContainer.offsetWidth - 50) + "px";
+                plant.style.top = Math.random() * (plantsContainer.offsetHeight - 50) + "px";
+                
+                plant.onclick = function() {
+                    if (i === olegIndex) {
+                        foundOleg = true;
+                        plant.style.backgroundColor = "red";
+                        plant.innerText = "ОЛЕГ";
+                        plant.style.display = "flex";
+                        plant.style.justifyContent = "center";
+                        plant.style.alignItems = "center";
+                        plant.style.color = "white";
+                        plant.style.fontSize = "10px";
+                        setTimeout(showNextGame, 1000);
+                    } else {
+                        plant.style.backgroundColor = "blue";
+                        plantsClicked++;
+                        if (plantsClicked >= 10 && !foundOleg) {
+                            const hint = document.createElement("p");
+                            hint.innerText = "Подсказка: ОЛЕГ где-то здесь!";
+                            document.getElementById("game1").appendChild(hint);
+                        }
+                    }
+                };
+                
+                plantsContainer.appendChild(plant);
+            }
+            
+            // Таймер
+            let timeLeft = 30;
+            const timer = document.getElementById("timer1");
+            timer.style.width = "100%";
+            
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                timer.style.width = (timeLeft / 30 * 100) + "%";
+                
+                if (timeLeft <= 0 || foundOleg) {
+                    clearInterval(timerInterval);
+                    if (!foundOleg) {
+                        const plant = plantsContainer.children[olegIndex];
+                        plant.style.backgroundColor = "red";
+                        plant.innerText = "ОЛЕГ";
+                        plant.style.display = "flex";
+                        plant.style.justifyContent = "center";
+                        plant.style.alignItems = "center";
+                        plant.style.color = "white";
+                        plant.style.fontSize = "10px";
+                        setTimeout(showNextGame, 1000);
+                    }
+                }
+            }, 1000);
+        }
+        
+        // Игра 2: Лабиринт
+        function startMazeGame() {
+            playerX = 10;
+            playerY = 10;
+            const player = document.getElementById("player");
+            player.style.left = playerX + "px";
+            player.style.top = playerY + "px";
+            
+            // Создать стены
+            const maze = document.querySelector(".maze");
+            walls = [
+                { x: 50, y: 0, width: 10, height: 300 },
+                { x: 100, y: 100, width: 200, height: 10 },
+                { x: 150, y: 200, width: 200, height: 10 },
+                { x: 300, y: 50, width: 10, height: 150 },
+                { x: 200, y: 300, width: 150, height: 10 }
+            ];
+            
+            walls.forEach(wall => {
+                const wallElement = document.createElement("div");
+                wallElement.className = "wall";
+                wallElement.style.left = wall.x + "px";
+                wallElement.style.top = wall.y + "px";
+                wallElement.style.width = wall.width + "px";
+                wallElement.style.height = wall.height + "px";
+                maze.appendChild(wallElement);
+            });
+            
+            // Обработчик клавиш
+            window.onkeydown = function(e) {
+                let newX = playerX;
+                let newY = playerY;
+                
+                switch(e.key) {
+                    case "ArrowUp":
+                    case "w":
+                    case "W":
+                        newY -= playerSpeed;
+                        break;
+                    case "ArrowDown":
+                    case "s":
+                    case "S":
+                        newY += playerSpeed;
+                        break;
+                    case "ArrowLeft":
+                    case "a":
+                    case "A":
+                        newX -= playerSpeed;
+                        break;
+                    case "ArrowRight":
+                    case "d":
+                    case "D":
+                        newX += playerSpeed;
+                        break;
+                }
+                
+                // Проверка столкновений со стенами
+                let collision = false;
+                if (newX < 0 || newX > 380 || newY < 0 || newY > 380) {
+                    collision = true;
+                }
+                
+                walls.forEach(wall => {
+                    if (newX < wall.x + wall.width &&
+                        newX + 20 > wall.x &&
+                        newY < wall.y + wall.height &&
+                        newY + 20 > wall.y) {
+                        collision = true;
+                    }
+                });
+                
+                if (!collision) {
+                    playerX = newX;
+                    playerY = newY;
+                    player.style.left = playerX + "px";
+                    player.style.top = playerY + "px";
+                }
+                
+                // Проверка на достижение финиша
+                if (playerX > 350 && playerY > 350) {
+                    window.onkeydown = null;
+                    showNextGame();
+                }
+            };
+        }
+        
+        // Игра 3: Игра на память
+        function startMemoryGame() {
+            matchedPairs = 0;
+            flippedCards = [];
+            const container = document.getElementById("memory-container");
+            container.innerHTML = "";
+            
+            const letters = ["О", "Л", "Е", "Г", "О", "Л", "Е", "Г"];
+            const shuffledLetters = shuffle(letters);
+            
+            shuffledLetters.forEach((letter, index) => {
+                const card = document.createElement("div");
+                card.className = "memory-card";
+                card.dataset.value = letter;
+                card.dataset.index = index;
+                card.onclick = function() {
+                    flipCard(this);
+                };
+                container.appendChild(card);
+            });
+        }
+        
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+        
+        function flipCard(card) {
+            if (flippedCards.length < 2 && !flippedCards.includes(card) && !card.classList.contains("matched")) {
+                card.classList.add("flipped");
+                card.innerText = card.dataset.value;
+                flippedCards.push(card);
+                
+                if (flippedCards.length === 2) {
+                    setTimeout(checkMatch, 500);
+                }
+            }
+        }
+        
+        function checkMatch() {
+            const card1 = flippedCards[0];
+            const card2 = flippedCards[1];
+            
+            if (card1.dataset.value === card2.dataset.value) {
+                card1.classList.add("matched");
+                card2.classList.add("matched");
+                matchedPairs++;
+                
+                if (matchedPairs === 4) {
+                    setTimeout(showNextGame, 1000);
+                }
+            } else {
+                card1.classList.remove("flipped");
+                card2.classList.remove("flipped");
+                card1.innerText = "";
+                card2.innerText = "";
+            }
+            
+            flippedCards = [];
+        }
+        
+        // Игра 4: Поймать цель
+        function startTargetGame() {
+            clicksLeft = 10;
+            document.getElementById("clicks-left").innerText = clicksLeft;
+            
+            const container = document.getElementById("target-container");
+            const target = document.createElement("div");
+            target.className = "target";
+            target.innerText = "ОЛЕГ";
+            target.style.display = "flex";
+            target.style.justifyContent = "center";
+            target.style.alignItems = "center";
+            
+            target.onclick = function() {
+                clicksLeft--;
+                document.getElementById("clicks-left").innerText = clicksLeft;
+                
+                if (clicksLeft <= 0) {
+                    container.removeChild(target);
+                    setTimeout(showNextGame, 500);
+                } else {
+                    // Переместить цель
+                    target.style.left = Math.random() * (container.offsetWidth - 60) + "px";
+                    target.style.top = Math.random() * (container.offsetHeight - 60) + "px";
+                }
+            };
+            
+            // Начальное положение
+            target.style.left = Math.random() * (container.offsetWidth - 60) + "px";
+            target.style.top = Math.random() * (container.offsetHeight - 60) + "px";
+            
+            container.appendChild(target);
+            
+            // Автоматическое перемещение каждые 1.5 секунды
+            const moveInterval = setInterval(() => {
+                if (clicksLeft <= 0) {
+                    clearInterval(moveInterval);
+                    return;
+                }
+                
+                target.style.left = Math.random() * (container.offsetWidth - 60) + "px";
+                target.style.top = Math.random() * (container.offsetHeight - 60) + "px";
+            }, 1500);
+        }
+        
+        // Игра 5: Задание на печать
+        function startTypingGame() {
+            const typingInput = document.getElementById("typing-input");
+            const requiredText = "ОЛЕГ ХОЧЕТ ВЫБРАТЬСЯ ПОМОГИТЕ ОЛЕГУ СРОЧНО";
+            
+            typingInput.value = "";
+            typingInput.focus();
+            
+            typingInput.addEventListener("input", function() {
+                if (typingInput.value.toUpperCase() === requiredText) {
+                    setTimeout(showNextGame, 500);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

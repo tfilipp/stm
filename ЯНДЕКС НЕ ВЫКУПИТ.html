@@ -1,0 +1,672 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ваш шаш</title>
+    <style>
+        :root {
+            --steam-dark: #1b2838;
+            --steam-darker: #171a21;
+            --steam-mid: #2a475e;
+            --steam-light: #66c0f4;
+            --steam-text: #c7d5e0;
+            --steam-green: #5c7e10;
+            --steam-discount: #a4d007;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--steam-dark);
+            color: var(--steam-text);
+            line-height: 1.6;
+        }
+        
+        /* Mobile-first подход */
+        .container {
+            width: 100%;
+            padding: 0 15px;
+            margin: 0 auto;
+        }
+        
+        /* Шапка */
+        header {
+            background-color: var(--steam-darker);
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--steam-light);
+            text-decoration: none;
+        }
+        
+        .mobile-menu-button {
+            background: none;
+            border: none;
+            color: var(--steam-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .nav-menu {
+            display: none;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            background-color: var(--steam-mid);
+            z-index: 99;
+        }
+        
+        .nav-menu.active {
+            display: block;
+        }
+        
+        .nav-menu ul {
+            list-style-type: none;
+        }
+        
+        .nav-menu li {
+            padding: 15px;
+            border-bottom: 1px solid rgba(199, 213, 224, 0.1);
+        }
+        
+        .nav-menu a {
+            color: var(--steam-text);
+            text-decoration: none;
+            display: block;
+        }
+        
+        .search-bar {
+            display: flex;
+            margin: 10px 0;
+        }
+        
+        .search-bar input {
+            flex-grow: 1;
+            padding: 8px;
+            background-color: var(--steam-mid);
+            border: none;
+            border-radius: 3px 0 0 3px;
+            color: var(--steam-text);
+        }
+        
+        .search-bar button {
+            padding: 8px 12px;
+            background-color: var(--steam-light);
+            border: none;
+            border-radius: 0 3px 3px 0;
+            color: var(--steam-darker);
+            cursor: pointer;
+        }
+        
+        /* Герой-секция */
+        .hero {
+            background: linear-gradient(rgba(27, 40, 56, 0.7), rgba(27, 40, 56, 0.9)), 
+                        url('https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 50px 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .hero h1 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--steam-light);
+        }
+        
+        .hero p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--steam-green);
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--steam-discount);
+        }
+        
+        /* Секция категорий */
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--steam-light);
+            margin: 20px 0;
+            padding-left: 15px;
+            border-left: 3px solid var(--steam-light);
+        }
+        
+        .categories {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        
+        .category-card {
+            flex: 0 0 150px;
+            margin-right: 10px;
+            background-color: var(--steam-mid);
+            border-radius: 3px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category-card img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+        
+        .category-card h3 {
+            padding: 10px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        
+        /* Рекомендации */
+        .recommendations {
+            margin-bottom: 30px;
+        }
+        
+        .plant-card {
+            background-color: var(--steam-mid);
+            border-radius: 3px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .plant-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .plant-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        
+        .plant-info {
+            padding: 15px;
+        }
+        
+        .plant-title {
+            font-size: 1.2rem;
+            color: var(--steam-light);
+            margin-bottom: 8px;
+        }
+        
+        .plant-description {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        
+        .tag {
+            background-color: rgba(102, 192, 244, 0.2);
+            padding: 3px 8px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+        
+        .price-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .price {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .discount {
+            background-color: var(--steam-discount);
+            color: black;
+            padding: 3px 5px;
+            border-radius: 3px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .old-price {
+            text-decoration: line-through;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .buy-button {
+            background-color: var(--steam-green);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        /* Специальные предложения */
+        .special-offers {
+            margin-bottom: 30px;
+        }
+        
+        .offer-banner {
+            background-color: var(--steam-mid);
+            border-radius: 3px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+            background-image: linear-gradient(rgba(42, 71, 94, 0.8), rgba(42, 71, 94, 0.8)), 
+                              url('https://images.unsplash.com/photo-1470058869958-2a77ade41c02?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .offer-title {
+            font-size: 1.5rem;
+            color: var(--steam-light);
+            margin-bottom: 10px;
+        }
+        
+        .offer-description {
+            margin-bottom: 15px;
+        }
+        
+        /* Подвал */
+        footer {
+            background-color: var(--steam-darker);
+            padding: 30px 0;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .footer-section h3 {
+            color: var(--steam-light);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-section ul {
+            list-style-type: none;
+        }
+        
+        .footer-section li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-section a {
+            color: var(--steam-text);
+            text-decoration: none;
+        }
+        
+        .footer-section a:hover {
+            text-decoration: underline;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: var(--steam-mid);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+        }
+        
+        .copyright {
+            margin-top: 20px;
+            text-align: center;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        /* Медиа-запросы для больших экранов */
+        @media (min-width: 768px) {
+            .container {
+                width: 750px;
+            }
+            
+            .mobile-menu-button {
+                display: none;
+            }
+            
+            .nav-menu {
+                display: block;
+                position: static;
+                width: auto;
+                background-color: transparent;
+            }
+            
+            .nav-menu ul {
+                display: flex;
+            }
+            
+            .nav-menu li {
+                border-bottom: none;
+                padding: 0 15px;
+            }
+            
+            .header-content {
+                flex-wrap: wrap;
+            }
+            
+            .search-bar {
+                order: 3;
+                width: 100%;
+                margin-top: 10px;
+            }
+            
+            .recommendations-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .plant-card {
+                margin-bottom: 0;
+            }
+            
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .container {
+                width: 970px;
+            }
+            
+            .header-content {
+                flex-wrap: nowrap;
+            }
+            
+            .search-bar {
+                order: 0;
+                width: auto;
+                margin-top: 0;
+                margin-left: 20px;
+            }
+            
+            .recommendations-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .container {
+                width: 1170px;
+            }
+            
+            .recommendations-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">я-потерялся-у-меня-нет-смысла-жизни-ОПА-РАСТЕНИЯ.рф</a>
+                <button class="mobile-menu-button">☰</button>
+                <div class="search-bar">
+                    <input type="text" placeholder="Поиск растений...">
+                    <button>п</button>
+                </div>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="#">Магазин</a></li>
+                        <li><a href="#">Категории</a></li>
+                        <li><a href="#">Новинки</a></li>
+                        <li><a href="#">Скидки</a></li>
+                        <li><a href="#">Поддержка</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Зелёная революция в вашем доме</h1>
+            <p>Лучшие растения для декора, очистки воздуха и повышения настроения</p>
+            <a href="#" class="cta-button">потерять последние капли своего достоинства</a>
+        </div>
+    </section>
+
+    <div class="container">
+        <h2 class="section-title">Категории растений</h2>
+        <div class="categories">
+            <div class="category-card">
+                <img src="img/bestsellers1.png" alt="Комнатные растения">
+                <h3>Комнатные</h3>
+            </div>
+            <div class="category-card">
+                <img src="img/bestsellers2.png" alt="Суккуленты">
+                <h3>Суккуленты</h3>
+            </div>
+            <div class="category-card">
+                <img src="img/bestsellers3.png" alt="Кактусы">
+                <h3>Кактусы</h3>
+            </div>
+            <div class="category-card">
+                <img src="img/bestsellers4.png" alt="Орхидеи">
+                <h3>Орхидеи</h3>
+            </div>
+        </div>
+
+        <section class="special-offers">
+            <h2 class="section-title">Специальные предложения</h2>
+            <div class="offer-banner">
+                <h3 class="offer-title">Летняя распродажа</h3>
+                <p class="offer-description">Скидки до 60% на тропические растения! Только до конца месяца.</p>
+                <a href="#" class="cta-button">Посмотреть предложения</a>
+            </div>
+        </section>
+
+        <section class="recommendations">
+            <h2 class="section-title">Рекомендуемые растения</h2>
+            <div class="recommendations-grid">
+                <div class="plant-card">
+                    <img src="https://images.unsplash.com/photo-1545239705-1564e58b9e4a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Монстера Делициоза" class="plant-image">
+                    <div class="plant-info">
+                        <h3 class="plant-title">Монстера Делициоза</h3>
+                        <p class="plant-description">Популярное тропическое растение с характерными разрезными листьями</p>
+                        <div class="tags">
+                            <span class="tag">Тропическое</span>
+                            <span class="tag">Теневыносливое</span>
+                            <span class="tag">Популярное</span>
+                        </div>
+                        <div class="price-section">
+                            <div>
+                                <span class="discount">-30%</span>
+                                <span class="old-price">2800 ₽</span>
+                                <span class="price">1960 ₽</span>
+                            </div>
+                            <button class="buy-button">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="plant-card">
+                    <img src="img/bestsellers1.png" alt="Фикус Лирата" class="plant-image">
+                    <div class="plant-info">
+                        <h3 class="plant-title">Фикус Лирата</h3>
+                        <p class="plant-description">Элегантное растение с крупными скрипкообразными листьями</p>
+                        <div class="tags">
+                            <span class="tag">Крупномер</span>
+                            <span class="tag">Для офиса</span>
+                            <span class="tag">Фикус</span>
+                        </div>
+                        <div class="price-section">
+                            <div>
+                                <span class="price">3500 ₽</span>
+                            </div>
+                            <button class="buy-button">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="plant-card">
+                    <img src="img/bestsellers2.png" alt="Сансевиерия" class="plant-image">
+                    <div class="plant-info">
+                        <h3 class="plant-title">Сансевиерия</h3>
+                        <p class="plant-description">Неприхотливое растение с вертикальными листьями</p>
+                        <div class="tags">
+                            <span class="tag">Неприхотливое</span>
+                            <span class="tag">Очищающее</span>
+                            <span class="tag">Бестселлер</span>
+                        </div>
+                        <div class="price-section">
+                            <div>
+                                <span class="discount">-15%</span>
+                                <span class="old-price">1200 ₽</span>
+                                <span class="price">1020 ₽</span>
+                            </div>
+                            <button class="buy-button">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="plant-card">
+                    <img src="img/bestsellers3.png" alt="Суккулент Эхеверия" class="plant-image">
+                    <div class="plant-info">
+                        <h3 class="plant-title">Эхеверия</h3>
+                        <p class="plant-description">Красивый розеточный суккулент с сизо-голубыми листьями</p>
+                        <div class="tags">
+                            <span class="tag">Суккулент</span>
+                            <span class="tag">Для солнца</span>
+                            <span class="tag">Компактное</span>
+                        </div>
+                        <div class="price-section">
+                            <div>
+                                <span class="price">650 ₽</span>
+                            </div>
+                            <button class="buy-button">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="plant-card">
+                    <img src="img/bestsellers4.png" alt="ДЛЯ СЛЕПЫХ" class="plant-image">
+                    <div class="plant-info">
+                        <h3 class="plant-title">ААААААААААААААААААААААААААААААА</h3>
+                        <p class="plant-description">запятая</p>
+                        <div class="tags">
+                            <span class="tag">помогите</span>
+                            <span class="tag">я олег</span>
+                            <span class="tag">я застрял на сайте</span>
+                        </div>
+                        <div class="price-section">
+                            <div>
+                                <span class="price">ВЫПУСТИТЕ МЕНЯ ОТСЮДА Я НЕ ХОЧУ БЫТЬ КАКТУСОМ</span>
+                            </div>
+                            <a href="олег.html" class="buy-button">ААААААААААААААААААААААААААААААА</a>
+                        </div>Ы
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>О магазине</h3>
+                    <ul>
+                        <li><a href="#">О нас</a></li>
+                        <li><a href="#">Наша команда</a></li>
+                        <li><a href="#">Блог</a></li>
+                        <li><a href="#">Карьера</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Покупателям</h3>
+                    <ul>
+                        <li><a href="#">Доставка</a></li>
+                        <li><a href="#">Оплата</a></li>
+                        <li><a href="#">Возврат</a></li>
+                        <li><a href="#">Помощь</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <p>Москва, ул. Зеленая, 42</p>
+                    <p>Тел: +7 (999) 123-45-67</p>
+                    <p>Email: info@plantsteam.ru</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">VK</a>
+                        <a href="#" class="social-link">TG</a>
+                        <a href="#" class="social-link">YT</a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2023 PlantSteam. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Простой JavaScript для мобильного меню
+        document.querySelector('.mobile-menu-button').addEventListener('click', function() {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
