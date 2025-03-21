@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Приключения Олега</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(#1a1a1a, #4a4a4a);
+            font-family: 'Arial', sans-serif;
+        }
+
+        #game-container {
+            position: relative;
+        }
+
+        #game {
+            width: 1000px;
+            height: 500px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(#87CEEB, #E0F6FF);
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        #player {
+            width: 60px;
+            height: 80px;
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 160"><path d="M50,0 Q75,25 75,50 Q75,75 50,100 Q25,75 25,50 Q25,25 50,0" fill="%23FF6B6B"/><circle cx="40" cy="40" r="5" fill="white"/><circle cx="60" cy="40" r="5" fill="white"/><path d="M40,60 Q50,70 60,60" fill="none" stroke="white" stroke-width="3"/></svg>') no-repeat;
+            background-size: contain;
+            transition: transform 0.2s;
+        }
+
+        .plant {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50,0 Q80,30 50,60 Q20,30 50,0" fill="%2390EE90"/><path d="M50,30 L50,100" stroke="%2348924A" stroke-width="8"/></svg>') no-repeat;
+            background-size: contain;
+            transition: transform 0.3s;
+        }
+
+        .plant:hover {
+            transform: scale(1.1);
+        }
+
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: white;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        #ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(#4CAF50, #45a049);
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 20px;
+            opacity: 0.8;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            from { left: -100px; }
+            to { left: 100%; }
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .collect-effect {
+            position: absolute;
+            animation: collect 0.5s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes collect {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="game">
+            <div id="ground"></div>
+            <div id="player"></div>
+            <div id="score">Растения: 0</div>
+            <div id="instructions">
+                Управление:<br>
+                ← → Движение<br>
+                Пробел - Прыжок
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const game = document.getElementById('game');
+        const scoreElement = document.getElementById('score');
+        let isJumping = false;
+        let score = 0;
+        let gameStarted = false;
+
+        // Создание облаков
+        function createCloud() {
+            const cloud = document.createElement('div');
+            cloud.className = 'cloud';
+            cloud.style.top = Math.random() * 200 + 'px';
+            cloud.style.width = Math.random() * 100 + 100 + 'px';
+            cloud.style.height = Math.random() * 30 + 20 + 'px';
+            game.appendChild(cloud);
+
+            cloud.addEventListener('animationend', () => cloud.remove());
+        }
+
+        setInterval(createCloud, 10000);
+
+        // Управление
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !isJumping) {
+                jump();
+            }
+            if (e.code === 'ArrowLeft') {
+                moveLeft();
+                player.style.transform = 'scaleX(-1)';
+            }
+            if (e.code === 'ArrowRight') {
+                moveRight();
+                player.style.transform = 'scaleX(1)';
+            }
+        });
+
+        function jump() {
+            if (isJumping) return;
+            isJumping = true;
+            let position = 0;
+            let jumpHeight = 200;
+            let jumpDuration = 500;
+            let startTime = Date.now();
+
+            function jumpAnimation() {
+                let currentTime = Date.now() - startTime;
+                let progress = currentTime / jumpDuration;
+
+                if (progress >= 1) {
+                    player.style.bottom = '0px';
+                    isJumping = false;
+                    return;
+                }
+
+                let height = jumpHeight * Math.sin(progress * Math.PI);
+                player.style.bottom = height + 'px';
+                requestAnimationFrame(jumpAnimation);
+            }
+
+            requestAnimationFrame(jumpAnimation);
+        }
+
+        function moveLeft() {
+            let left = parseInt(window.getComputedStyle(player).getPropertyValue('left'));
+            if (left > 0) {
+                player.style.left = (left - 15) + 'px';
+            }
+        }
+
+        function moveRight() {
+            let left = parseInt(window.getComputedStyle(player).getPropertyValue('left'));
+            if (left < (game.offsetWidth - player.offsetWidth)) {
+                player.style.left = (left + 15) + 'px';
+            }
+        }
+
+        function createCollectEffect(x, y) {
+            const effect = document.createElement('div');
+            effect.className = 'collect-effect';
+            effect.style.left = x + 'px';
+            effect.style.top = y + 'px';
+            effect.style.width = '40px';
+            effect.style.height = '40px';
+            effect.style.background = 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text x=\'50\' y=\'50\' font-size=\'50\' text-anchor=\'middle\' fill=\'gold\'>✨</text></svg>") no-repeat';
+            game.appendChild(effect);
+            setTimeout(() => effect.remove(), 500);
+        }
+
+        function createPlant() {
+            const plant = document.createElement('div');
+            plant.className = 'plant';
+            plant.style.left = Math.random() * (game.offsetWidth - 40) + 'px';
+            plant.style.bottom = '0px';
+            game.appendChild(plant);
+
+            let checkCollision = setInterval(() => {
+                let playerRect = player.getBoundingClientRect();
+                let plantRect = plant.getBoundingClientRect();
+
+                if (playerRect.left < plantRect.right && 
+                    playerRect.right > plantRect.left &&
+                    playerRect.bottom > plantRect.top) {
+                    createCollectEffect(plantRect.left, plantRect.top);
+                    plant.remove();
+                    clearInterval(checkCollision);
+                    score++;
+                    scoreElement.textContent = 'Растения: ' + score;
+
+                    if (score >= 10 && !gameStarted) {
+                        alert('🎉 Поздравляем! Вы собрали 10 растений!\n🎁 Получите свою скидку!');
+                        gameStarted = true;
+                    }
+                }
+            }, 10);
+        }
+
+        setInterval(createPlant, 2000);
+    </script>
+</body>
+</html>
